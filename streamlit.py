@@ -3,7 +3,7 @@ import base64
 from pathlib import Path
 import pandas as pd
 
-items_df = pd.read_csv(Path.cwd().parent/"data"/"items.csv")
+items_df = pd.read_csv("https://raw.githubusercontent.com/Ildsjel-EPFL/library-recommender/blob/main/data/items.csv")
 
 # ==========================================
 # 1. PAGE CONFIGURATION & CUSTOM STYLING

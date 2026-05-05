@@ -1,0 +1,18 @@
+# "AIzaSyAMip3oncQ87w2ayCQGnBTwTcDf4iUQ9dA", "AIzaSyALzCgQkyuxPPMhbqQP9L5kBn78GBDjSdk",  # LibraryRecommender
+    # "AIzaSyABVHqtZ0W9AkbEYQv4nNtUCTRvIWmAIws", "AIzaSyDQoNXNfOmYrcL01Q7GDin_JN7SMAvoKVQ",  # Sheets Manager
+    # "AIzaSyBDNV4hhgFrhKREDJP5BrAulO9y2taIcBc", "AIzaSyDKuTgasBRWLE663bMB0AWA5KKvTeTzFG8",  # Crafty
+    # "AIzaSyAXNG464qMkWPdqUn8IprUFUXDTUc04xRo", "AIzaSyB905wbmV1spskCEo7319K9z_EUqwOQSu8",  # LibReco1
+    # "AIzaSyD5OZsKbw3t8CKj58PCcV7Ctqcvp5705rU", "AIzaSyBQHu7YHRlqyB2xZnnDNLXT6mxe212QBRQ",  # LibReco2
+    # "AIzaSyDbDaNRKRhuOZreSvKPukdXCYnHXmpB5WE", "AIzaSyAdzGvUn3UD-zqFXw8UllF5GG2kIx59Jcg",  # LibReco3
+    # "AIzaSyBKTPvJX64iON_c617sMzlheQl-O5uPKIE", "AIzaSyCKI7W_qymFH7o1F5U0iQKGjAXrAiEvVho",  # LibReco4
+    # "AIzaSyD3AURgZIc-KwzyI9esmcRxKXVrXXsuBDU", "AIzaSyDk33I4lm-CVYyCH-wNZLKIRMHcEK7ReKs",  # LibReco5
+    # "AIzaSyAjOlIgmZ5s1qD2AOT_EUD2gOiKwU8dxtY", "AIzaSyAsKNydg4Il7ennCXqcUOUDfsQm_Qpa_Jc",  # LibReco6
+    # "AIzaSyBwmLy41nI_2BGHx3qEP8Wy4JWqJUhYgj8", "AIzaSyBO_XMLX7yj6MlHJyp735d7UVXm1ZqSQtI",  # LibReco7
+    # "AIzaSyCpkVb2BvH6A6wShWXXoOzIRLvgpl_83Pw", "AIzaSyCsBMkMGg9X13309Y9Xm3zoVJBdoL63sXA",  # LibReco8
+    # "AIzaSyBJVdOcPa6jFayHdML1dkfhjzPbl0y762U", "AIzaSyButVKbrIBmitSY6Z7JzmzzwHH4sRp5X8A",  # LibReco9
+    # "AIzaSyB1gxKynyH8OkLLIdT6yESv7TTjaFsusc8", "AIzaSyADCIp10j67VqLYn0I7ynUSYfab1UXxjP8",  # LibReco10
+    # "AIzaSyB9uKycGYm-hqyYnadmi608bU2UcJTOowo", "AIzaSyDTg8huEVS9MKCVadij1XrCFcP2ptLUqYo",  # LibReco11
+    # "AIzaSyCQ15HAJ-MydEBRoCOc_hGTNOOvQqi9BtE", "AIzaSyBcs2fgLEasxjB-m4prfnf5CeUlMo4w9cI",  # LibReco12
+    # "AIzaSyCHlvNW41ILOBpenMHwiUNaZzZ4TodEnkw", "AIzaSyC8JsBofx8qlVuzaPF4Ur7fJB325jpcySs",  # LibReco13
+    # "AIzaSyChCgUF1zPbgs_sZQVhFALo8HUbImcJBKA", "AIzaSyBHIK6k8OjzFRe7hxtURc0Uy4me8ReZXD4",  # LibReco14
+    # "AIzaSyD_S51dy1PQloZHDj4lp-13q5FX47RvxKE", "AIzaSyD7LWKzTtcNWD2Hp4mnqmE7GwPww3bfxBk",  # LibReco1

@@ -1,0 +1,3 @@
+data/hf_login.txt
+tests/test_api.ipynb
+tests/hybrid_item_similarity_e5.npy

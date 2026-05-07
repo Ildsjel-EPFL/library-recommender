@@ -58,7 +58,7 @@ df_catalog = load_catalog()
 # ==========================================
 # 3. POP-UPS & DIALOGS
 # ==========================================
-@st.dialog("🍪 Mandatory Cookie Policy")
+@st.dialog("🍪 Mandatory Cookie Policy 🍪")
 def cookie_popup():
     st.write("We use cookies to track your reading habits, judge your taste in literature, and sell your data to alien overlords. By clicking accept, you agree to these (totally reasonable) terms.")
     if st.button("I Accept (Like I have a choice)"):

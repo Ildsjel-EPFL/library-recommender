@@ -101,7 +101,7 @@ def door_animation():
         top: 0;
         width: 50vw;
         height: 100vh;
-        background-color: transparent;
+        background-color: #111;
         z-index: 9999;
         animation: openDoor 2s ease-in-out forwards;
         animation-delay: 0.5s;
@@ -196,13 +196,14 @@ def premium_popup(read_book_ids: List[int], df_catalog: pd.DataFrame):
 
 # --- STATE 0: Enforce Cookies ---
 if not st.session_state.cookies_accepted:
+    # set_background("https://i1-c.pinimg.com/1200x/b2/26/fb/b226fbeb41e4d09dbfd366122585594c.jpg")
     cookie_popup()
     st.stop()
 
 # --- STATE 1: Registration / Login ---
 if not st.session_state.logged_in:
     # set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
-    set_background("https://i1-c.pinimg.com/1200x/b2/26/fb/b226fbeb41e4d09dbfd366122585594c.jpg")
+    set_background("https://static.wikia.nocookie.net/clair-obscur/images/8/84/Coe33_coral_strange_door.jpg/revision/latest/scale-to-width-down/1000?cb=20250430012308")
     
     st.title("Welcome to the Recommender")
     st.subheader("Please register to continue")

@@ -99,7 +99,7 @@ def set_background(image_url):
         background-color: rgba(0, 0, 0, 0.7);
         padding: 2rem;
         border-radius: 10px;
-    }}
+}}
     </style>
     """
     st.markdown(page_bg_img, unsafe_allow_html=True)

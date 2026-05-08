@@ -4,10 +4,13 @@ import os
 import gdown
 import numpy as np
 
-from utils.helpers import set_background
-from utils.data import load_catalog, DATA_DIR
-from utils.pop_ups import cookie_popup, premium_popup
-from utils.models import basic_model, premium_model
+from sklearn.metrics.pairwise import cosine_similarity
+from typing import List
+
+# from utils.helpers import set_background
+# from utils.data import load_catalog, DATA_DIR
+# from utils.pop_ups import cookie_popup, premium_popup
+# from utils.models import basic_model, premium_model
 
 st.set_page_config(page_title="The Ultimate Book Recommender", layout="wide")
 
@@ -56,6 +59,137 @@ def load_data():
     return item_sim, historic_users, hybrid_item_similarity, df_catalog
 
 item_sim, historic_users, hybrid_item_similarity, df_catalog = load_data()
+
+def set_background(image_url):
+    """
+    Injects CSS to set the background image.
+    
+    :param image_url: URL or path to the background image
+    :type image_url: str
+    :return: None
+    """
+        
+    page_bg_img = f"""
+    <style>
+    .stApp {{
+        background-image: url("{image_url}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }}
+    /* Adding a dark overlay so text remains readable */
+    .stApp > header {{
+        background-color: transparent;
+    }}
+    .block-container {{
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 2rem;
+        border-radius: 10px;
+    }}
+    </style>
+    """
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+
+    # V2: If you want to add a semi-transparent overlay for better text readability, you can modify the CSS like this:
+    # page_bg_img = f"""
+    # <style>
+    # .stApp {{
+    #     background-image: url("{image_url}");
+    #     background-size: cover;
+    #     background-position: center;
+    #     background-attachment: fixed;
+    # }}
+    # .stApp > header {{ background-color: transparent; }}
+    # .block-container {{
+    #     background-color: rgba(0, 0, 0, 0.7);
+    #     padding: 2rem;
+    #     border-radius: 10px;
+    # }}
+    # </style>
+    # """
+    # st.markdown(page_bg_img, unsafe_allow_html=True)
+
+def basic_model(selected_books : List[str], catalog_df : pd.DataFrame) -> List[int]:
+    # item_sim, historic_users = load_assets_basic()
+    num_items = item_sim.shape[0]
+    # 1. Map selections to IDs
+    read_book_ids = [catalog_df.Title.to_list().index(title) for title in selected_books]
+    
+    # 2. Create the interaction vector
+    user_vector = np.zeros(num_items)
+    user_vector[read_book_ids] = 1
+    
+    # A. ITEM-BASED PREDICTION
+    item_scores = item_sim.dot(user_vector)
+    
+    # B. USER-BASED PREDICTION
+    user_similarities = cosine_similarity(user_vector.reshape(1, -1), historic_users)
+    user_scores = user_similarities.dot(historic_users).flatten()
+    
+    # C. HYBRID BLEND
+    alpha = 0.24  # Weight for item-based vs user-based (found thourgh GridSearchCV) 
+    hybrid_scores = (alpha * item_scores) + ((1 - alpha) * user_scores)
+
+    top_10_ids = np.argsort(hybrid_scores)[-10:][::-1].tolist()
+
+    return top_10_ids
+
+def premium_model(selected_books : List[str], catalog_df : pd.DataFrame) -> List[int]:
+    # similarity_matrix = load_assets_premium()
+    num_items = hybrid_item_similarity.shape[0]
+    read_book_ids = [catalog_df.Title.to_list().index(title) for title in selected_books]
+    
+    # Create a simple interaction vector for this new user (all 0s, with 1s for read books)
+    user_vector = np.zeros(num_items)
+    user_vector[read_book_ids] = 1
+    
+    # Multiply the similarity matrix by the user's vector
+    # This is instantaneous! O(N) complexity instead of O(N^2)
+    scores = hybrid_item_similarity.dot(user_vector)
+    
+    # Set the scores of already read books to -1 so they don't get recommended
+    scores[read_book_ids] = -1
+    
+    # Get the top 10 highest scoring unread books
+    top_10_ids = np.argsort(scores)[-10:][::-1].tolist()
+    return top_10_ids
+
+@st.dialog("🍪 Mandatory Cookie Policy 🍪")
+def cookie_popup():
+    st.write("We use cookies to track your reading habits, judge your taste in literature, and sell your data to alien overlords. By clicking accept, you agree to these (totally reasonable) terms.")
+    if st.button("I Accept (Like I have a choice)"):
+        st.session_state.cookies_accepted = True
+        st.rerun()
+
+@st.dialog("💎 Premium Subscription Required")
+def premium_popup(df_catalog : pd.DataFrame):
+    st.write("Our Premium Model requires an active subscription of $42/month.")
+    st.write("Click continue to complete your payment.")
+    
+    # Streamlit buttons cannot easily open new tabs. 
+    # We use HTML to create an anchor tag styled to look like a button.
+    # Replace the Rickroll link with your desired YouTube video!
+    youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    html_button = f"""
+        <a href="{youtube_url}" target="_blank" 
+           style="display: inline-block; padding: 0.5em 1em; color: white; 
+                  background-color: #FF4B4B; text-decoration: none; 
+                  border-radius: 4px; font-weight: bold; text-align: center;">
+            Continue to Payment
+        </a>
+    """
+    st.markdown(html_button, unsafe_allow_html=True)
+    with st.spinner("Processing Payment..."):
+        top_10_ids = premium_model() # Run the python function
+        st.rerun() # Reload page to inject JS
+        st.subheader("You should read:")
+        for book_id in top_10_ids:
+            title = df_catalog.loc[book_id, 'Title']
+            author = df_catalog.loc[book_id, 'Author']
+            st.write(f"📖 **{title}** by {author}")
+    
+    if st.button("Cancel & Use Basic Model"):
+        st.rerun()
 
 # Enforce Cookies first
 if not st.session_state.cookies_accepted:

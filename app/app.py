@@ -109,49 +109,100 @@ def set_background(image_url):
     # """
     # st.markdown(page_bg_img, unsafe_allow_html=True)
 
-def basic_model(selected_books : List[str], catalog_df : pd.DataFrame) -> List[int]:
-    # item_sim, historic_users = load_assets_basic()
-    num_items = item_sim.shape[0]
-    # 1. Map selections to IDs
-    read_book_ids = [catalog_df.Title.to_list().index(title) for title in selected_books]
+# def basic_model(selected_books : List[str], catalog_df : pd.DataFrame) -> List[int]:
+#     # item_sim, historic_users = load_assets_basic()
+#     num_items = item_sim.shape[0]
+#     # 1. Map selections to IDs
+#     read_book_ids = [catalog_df.Title.to_list().index(title) for title in selected_books]
     
-    # 2. Create the interaction vector
+#     # 2. Create the interaction vector
+#     user_vector = np.zeros(num_items)
+#     user_vector[read_book_ids] = 1
+    
+#     # A. ITEM-BASED PREDICTION
+#     item_scores = item_sim.dot(user_vector)
+    
+#     # B. USER-BASED PREDICTION
+#     user_similarities = cosine_similarity(user_vector.reshape(1, -1), historic_users)
+#     user_scores = user_similarities.dot(historic_users).flatten()
+    
+#     # C. HYBRID BLEND
+#     alpha = 0.24  # Weight for item-based vs user-based (found thourgh GridSearchCV) 
+#     hybrid_scores = (alpha * item_scores) + ((1 - alpha) * user_scores)
+
+#     top_10_ids = np.argsort(hybrid_scores)[-10:][::-1].tolist()
+
+#     return top_10_ids
+
+# def premium_model(selected_books : List[str], catalog_df : pd.DataFrame) -> List[int]:
+#     # similarity_matrix = load_assets_premium()
+#     num_items = hybrid_item_similarity.shape[0]
+#     read_book_ids = [catalog_df.Title.to_list().index(title) for title in selected_books]
+    
+#     # Create a simple interaction vector for this new user (all 0s, with 1s for read books)
+#     user_vector = np.zeros(num_items)
+#     user_vector[read_book_ids] = 1
+    
+#     # Multiply the similarity matrix by the user's vector
+#     # This is instantaneous! O(N) complexity instead of O(N^2)
+#     scores = hybrid_item_similarity.dot(user_vector)
+    
+#     # Set the scores of already read books to -1 so they don't get recommended
+#     scores[read_book_ids] = -1
+    
+#     # Get the top 10 highest scoring unread books
+#     top_10_ids = np.argsort(scores)[-10:][::-1].tolist()
+#     return top_10_ids
+
+def basic_model(read_book_ids: List[int]) -> List[int]:
+    """
+    Calculates recommendations using Item-Sim matrix and on-the-fly User-Sim.
+    """
+    num_items = item_sim.shape[0]
+    
+    # 1. Create the interaction vector
     user_vector = np.zeros(num_items)
     user_vector[read_book_ids] = 1
     
-    # A. ITEM-BASED PREDICTION
+    # 2. ITEM-BASED PREDICTION
     item_scores = item_sim.dot(user_vector)
     
-    # B. USER-BASED PREDICTION
+    # 3. USER-BASED PREDICTION
     user_similarities = cosine_similarity(user_vector.reshape(1, -1), historic_users)
     user_scores = user_similarities.dot(historic_users).flatten()
     
-    # C. HYBRID BLEND
-    alpha = 0.24  # Weight for item-based vs user-based (found thourgh GridSearchCV) 
+    # 4. HYBRID BLEND
+    alpha = 0.24  # Weight found through GridSearchCV 
     hybrid_scores = (alpha * item_scores) + ((1 - alpha) * user_scores)
 
+    # 5. Filter out the books the user just selected so they aren't recommended
+    hybrid_scores[read_book_ids] = -np.inf
+
+    # 6. Get the top 10 highest scoring unread books
     top_10_ids = np.argsort(hybrid_scores)[-10:][::-1].tolist()
 
     return top_10_ids
 
-def premium_model(selected_books : List[str], catalog_df : pd.DataFrame) -> List[int]:
-    # similarity_matrix = load_assets_premium()
+
+def premium_model(read_book_ids: List[int]) -> List[int]:
+    """
+    Calculates recommendations instantaneously using the pre-computed hybrid matrix.
+    """
     num_items = hybrid_item_similarity.shape[0]
-    read_book_ids = [catalog_df.Title.to_list().index(title) for title in selected_books]
     
-    # Create a simple interaction vector for this new user (all 0s, with 1s for read books)
+    # 1. Create the interaction vector
     user_vector = np.zeros(num_items)
     user_vector[read_book_ids] = 1
     
-    # Multiply the similarity matrix by the user's vector
-    # This is instantaneous! O(N) complexity instead of O(N^2)
+    # 2. Fast dot product against the hybrid matrix
     scores = hybrid_item_similarity.dot(user_vector)
     
-    # Set the scores of already read books to -1 so they don't get recommended
-    scores[read_book_ids] = -1
+    # 3. Filter out the books the user just selected
+    scores[read_book_ids] = -np.inf
     
-    # Get the top 10 highest scoring unread books
+    # 4. Get the top 10 highest scoring unread books
     top_10_ids = np.argsort(scores)[-10:][::-1].tolist()
+    
     return top_10_ids
 
 @st.dialog("🍪 Mandatory Cookie Policy 🍪")
@@ -161,14 +212,47 @@ def cookie_popup():
         st.session_state.cookies_accepted = True
         st.rerun()
 
-@st.dialog("💎 Premium Subscription Required")
-def premium_popup(df_catalog : pd.DataFrame):
+# @st.dialog("💎 Premium Subscription Required")
+# def premium_popup(df_catalog : pd.DataFrame):
+#     st.write("Our Premium Model requires an active subscription of $42/month.")
+#     st.write("Click continue to complete your payment.")
+    
+#     # Streamlit buttons cannot easily open new tabs. 
+#     # We use HTML to create an anchor tag styled to look like a button.
+#     # Replace the Rickroll link with your desired YouTube video!
+#     youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+#     html_button = f"""
+#         <a href="{youtube_url}" target="_blank" 
+#            style="display: inline-block; padding: 0.5em 1em; color: white; 
+#                   background-color: #FF4B4B; text-decoration: none; 
+#                   border-radius: 4px; font-weight: bold; text-align: center;">
+#             Continue to Payment
+#         </a>
+#     """
+#     st.markdown(html_button, unsafe_allow_html=True)
+#     with st.spinner("Processing Payment..."):
+#         # Pass the IDs correctly (assuming you implemented Fix #2)
+#         top_10_ids = premium_model(read_book_ids) 
+        
+#         # Store results in Session State
+#         st.session_state.predictions = df_catalog.loc[top_10_ids]
+        
+#         # Rerun to transition to State 3
+#         st.rerun()
+#         st.subheader("You should read:")
+#         for book_id in top_10_ids:
+#             title = df_catalog.loc[book_id, 'Title']
+#             author = df_catalog.loc[book_id, 'Author']
+#             st.write(f"📖 **{title}** by {author}")
+    
+#     if st.button("Cancel & Use Basic Model"):
+#         st.rerun()
+
+@st.dialog("💸 Premium Subscription Required")
+def premium_popup(read_book_ids: List[int], df_catalog: pd.DataFrame):
     st.write("Our Premium Model requires an active subscription of $42/month.")
     st.write("Click continue to complete your payment.")
     
-    # Streamlit buttons cannot easily open new tabs. 
-    # We use HTML to create an anchor tag styled to look like a button.
-    # Replace the Rickroll link with your desired YouTube video!
     youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     html_button = f"""
         <a href="{youtube_url}" target="_blank" 
@@ -179,14 +263,14 @@ def premium_popup(df_catalog : pd.DataFrame):
         </a>
     """
     st.markdown(html_button, unsafe_allow_html=True)
+    
     with st.spinner("Processing Payment..."):
-        top_10_ids = premium_model() # Run the python function
-        st.rerun() # Reload page to inject JS
-        st.subheader("You should read:")
-        for book_id in top_10_ids:
-            title = df_catalog.loc[book_id, 'Title']
-            author = df_catalog.loc[book_id, 'Author']
-            st.write(f"📖 **{title}** by {author}")
+        # Pass the extracted IDs directly into the model
+        top_10_ids = premium_model(read_book_ids) 
+        
+        # Save to session state and rerun to trigger State 3 (Results Display)
+        st.session_state.predictions = df_catalog.loc[top_10_ids]
+        st.rerun() 
     
     if st.button("Cancel & Use Basic Model"):
         st.rerun()
@@ -216,34 +300,71 @@ if not st.session_state.logged_in:
             else:
                 st.error("Please enter both a username and password.")
 
+# # STATE 2: Selection & Prediction
+# elif st.session_state.predictions is None:
+#     # Still using Background 1
+#     set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
+    
+#     st.title("Find Your Next Great Read")
+    
+#     # Create a dictionary mapping the display string to the actual integer ID
+#     book_options_dict = {f"{row['Title']} by {row['Author']}": idx for idx, row in df_catalog.iterrows()}
+
+#     selected_book_strings = st.multiselect(
+#         "Select the last 3 books you read:", 
+#         options=list(book_options_dict.keys()),
+#         max_selections=3
+#     )
+
+#     # Convert the selected strings directly into IDs
+#     read_book_ids = [book_options_dict[string] for string in selected_book_strings]
+    
+#     model_choice = st.radio("Choose your AI Model:", ["Basic (Free)", "Next-Gen (Premium)"])
+    
+#     if st.button("Get Recommendations"):
+#         if len(read_book_ids) != 3:
+#             st.warning("Please select exactly 3 books.")
+#         elif model_choice == "Next-Gen (Premium)":
+#             premium_popup(read_book_ids, df_catalog)
+#         else:
+#             with st.spinner("Calculating via Basic Model"):
+                
+#                 top_10_ids = basic_model(read_book_ids, df_catalog)  # This function should return the top 10 recommended item IDs based on the selected books
+#                 # 3. Store results in Session State to display in State 3
+#                 st.session_state.predictions = df_catalog.loc[top_10_ids]
+#                 st.rerun()
+
 # STATE 2: Selection & Prediction
 elif st.session_state.predictions is None:
-    # Still using Background 1
     set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
     st.title("Find Your Next Great Read")
     
-    book_options = df_catalog['Title'] + " by " + df_catalog['Author']
-    selected_books = st.multiselect(
+    # Create a dictionary mapping the display string to the actual integer ID
+    book_options_dict = {f"{row['Title']} by {row['Author']}": idx for idx, row in df_catalog.iterrows()}
+    
+    selected_book_strings = st.multiselect(
         "Select the last 3 books you read:", 
-        options=book_options,
+        options=list(book_options_dict.keys()),
         max_selections=3
     )
     
     model_choice = st.radio("Choose your AI Model:", ["Basic (Free)", "Next-Gen (Premium)"])
     
     if st.button("Get Recommendations"):
-        if len(selected_books) != 3:
+        if len(selected_book_strings) != 3:
             st.warning("Please select exactly 3 books.")
-        elif model_choice == "Next-Gen (Premium)":
-            premium_popup(df_catalog)
         else:
-            with st.spinner("Calculating via Basic Model"):
-                
-                top_10_ids = basic_model()  # This function should return the top 10 recommended item IDs based on the selected books
-                # 3. Store results in Session State to display in State 3
-                st.session_state.predictions = df_catalog.loc[top_10_ids]
-                st.rerun()
+            # Convert the selected strings directly into a list of integer IDs
+            read_book_ids = [book_options_dict[string] for string in selected_book_strings]
+            
+            if model_choice == "Next-Gen (Premium)":
+                premium_popup(read_book_ids, df_catalog)
+            else:
+                with st.spinner("Calculating via Basic Model"):
+                    top_10_ids = basic_model(read_book_ids) 
+                    st.session_state.predictions = df_catalog.loc[top_10_ids]
+                    st.rerun()
 
 # STATE 3: Results Display
 else:
@@ -269,7 +390,7 @@ else:
             with cols[0]:
                 sub_cols = st.columns([1, 2])
                 with sub_cols[0]:
-                    st.image(book['Cover_URL'], use_column_width=True)
+                    st.image(book['Cover_URL'], use_container_width=True=True)
                 with sub_cols[1]:
                     st.subheader(f"#{i+1}: {book['Title']}")
                     st.write(f"**Author:** {book['Author']}")
@@ -281,7 +402,7 @@ else:
             with cols[1]:
                 sub_cols = st.columns([1, 2])
                 with sub_cols[0]:
-                    st.image(book['Cover_URL'], use_column_width=True)
+                    st.image(book['Cover_URL'], use_container_width=True=True)
                 with sub_cols[1]:
                     st.subheader(f"#{i+2}: {book['Title']}")
                     st.write(f"**Author:** {book['Author']}")

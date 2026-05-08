@@ -235,6 +235,7 @@ if not st.session_state.logged_in:
         if submitted:
             if username and password:
                 st.session_state.logged_in = True
+                st.session_state.just_registered = True # Set flag for animation
                 st.rerun()
             else:
                 st.error("Please enter both a username and password.")

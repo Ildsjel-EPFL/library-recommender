@@ -51,7 +51,7 @@ def load_data():
     historic_users = np.load(data_mtx_path, mmap_mode='r')
     hybrid_item_similarity = np.load(hybrid_item_similarity_path, mmap_mode='r')
 
-    df_catalog = pd.read_csv(DATA_DIR / "enriched_items_merge_openlibrary_googlebooksAPI.csv", index_col='i')
+    df_catalog = pd.read_csv("data/enriched_items_merge_openlibrary_googlebooksAPI.csv", index_col='i')
 
     return item_sim, historic_users, hybrid_item_similarity, df_catalog
 

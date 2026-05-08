@@ -23,9 +23,9 @@ if "trigger_rickroll" not in st.session_state:
 
 @st.cache_data(show_spinner="Downloading data from Google Drive... This only happens once!")
 def load_data():
-    ITEM_SIM_ID = "https://drive.google.com/file/d/1yPC8D1nLAcQ_Uzenx8iRXrKzDfLCpzJR/view?usp=sharing" 
-    DATA_MTX_ID = "https://drive.google.com/file/d/1AZiKe2ArhSAKSDl3p5T17PnC5r8imgSz/view?usp=sharing"
-    HYBRID_ITEM_SIM_ID = "https://drive.google.com/file/d/143JXstEzTcdokhwDNqEgIfjS7gvs0fF6/view?usp=sharing"
+    ITEM_SIM_ID = "1yPC8D1nLAcQ_Uzenx8iRXrKzDfLCpzJR" 
+    DATA_MTX_ID = "1AZiKe2ArhSAKSDl3p5T17PnC5r8imgSz"
+    HYBRID_ITEM_SIM_ID = "143JXstEzTcdokhwDNqEgIfjS7gvs0fF6"
 
     # Define local file paths
     os.makedirs("data", exist_ok=True)

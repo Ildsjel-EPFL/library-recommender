@@ -7,18 +7,30 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from typing import List
 
+# ==========================================
+# SECTION 1: App Setup & Configuration
+# ==========================================
 st.set_page_config(page_title="The Ultimate Book Recommender", layout="wide")
 
-# Initialize our session states
+# ==========================================
+# SECTION 2: Session State Initialization
+# ==========================================
+# Session state variables act as the "memory" of our app. 
+# We use them to remember where the user is in the application flow.
 if "cookies_accepted" not in st.session_state:
     st.session_state.cookies_accepted = False
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "predictions" not in st.session_state:
     st.session_state.predictions = None
-if "trigger_rickroll" not in st.session_state:
-    st.session_state.trigger_rickroll = False
+if "just_registered" not in st.session_state:  # Added to track the door animation
+    st.session_state.just_registered = False
 
+# ==========================================
+# SECTION 3: Data Loading & Caching
+# ==========================================
+# We use @st.cache_resource so these massive files are only downloaded 
+# and loaded into RAM once when the server starts.
 @st.cache_resource(show_spinner="Downloading data from Google Drive... This only happens once!")
 def load_data():
     ITEM_SIM_ID = "1yPC8D1nLAcQ_Uzenx8iRXrKzDfLCpzJR" 
@@ -39,53 +51,29 @@ def load_data():
     if not os.path.exists(data_mtx_path):
         gdown.download(id=DATA_MTX_ID, output=data_mtx_path, quiet=False)
 
-    # Download Catalog if it doesn't exist
+    # Download Hybrid Matrix if it doesn't exist
     if not os.path.exists(hybrid_item_similarity_path):
         gdown.download(id=HYBRID_ITEM_SIM_ID, output=hybrid_item_similarity_path, quiet=False)
 
     # Load the downloaded files
-    # Use mmap_mode='r' for the massive .npy files to save RAM
+    # Use mmap_mode='r' for the massive .npy files to prevent RAM crashes
     item_sim = np.load(item_sim_path, mmap_mode='r')
     historic_users = np.load(data_mtx_path, mmap_mode='r')
     hybrid_item_similarity = np.load(hybrid_item_similarity_path, mmap_mode='r')
 
+    # Load the catalog
     df_catalog = pd.read_csv("data/enriched_items_merge_openlibrary_googlebooksAPI.csv", index_col='i')
 
     return item_sim, historic_users, hybrid_item_similarity, df_catalog
 
+# Actually trigger the load_data function
 item_sim, historic_users, hybrid_item_similarity, df_catalog = load_data()
 
+# ==========================================
+# SECTION 4: UI & Aesthetic Functions
+# ==========================================
 def set_background(image_url):
-    """
-    Injects CSS to set the background image.
-    
-    :param image_url: URL or path to the background image
-    :type image_url: str
-    :return: None
-    """
-        
-    # page_bg_img = f"""
-    # <style>
-    # .stApp {{
-    #     background-image: url("{image_url}");
-    #     background-size: cover;
-    #     background-position: center;
-    #     background-attachment: fixed;
-    # }}
-    # /* Adding a dark overlay so text remains readable */
-    # .stApp > header {{
-    #     background-color: transparent;
-    # }}
-    # .block-container {{
-    #     background-color: rgba(0, 0, 0, 0.7);
-    #     padding: 2rem;
-    #     border-radius: 10px;
-    # }}
-    # </style>
-    # """
-    # st.markdown(page_bg_img, unsafe_allow_html=True)
-
-    # V2: If you want to add a semi-transparent overlay for better text readability, you can modify the CSS like this:
+    """Injects CSS to set the background image with a dark overlay."""
     page_bg_img = f"""
     <style>
     .stApp {{
@@ -99,13 +87,13 @@ def set_background(image_url):
         background-color: rgba(0, 0, 0, 0.7);
         padding: 2rem;
         border-radius: 10px;
-}}
+    }}
     </style>
     """
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
 def door_animation():
-    """Injects CSS to create a full-screen opening door effect."""
+    """Injects CSS to create a full-screen opening door effect upon login."""
     door_css = """
     <style>
     .door-left, .door-right {
@@ -116,7 +104,7 @@ def door_animation():
         background-color: #111;
         z-index: 9999;
         animation: openDoor 2s ease-in-out forwards;
-        animation-delay: 0.5s; /* Slight pause before opening */
+        animation-delay: 0.5s;
     }
     .door-left { left: 0; transform-origin: left; border-right: 2px solid #fff; }
     .door-right { right: 0; transform-origin: right; border-left: 2px solid #fff; }
@@ -130,58 +118,48 @@ def door_animation():
     """
     st.markdown(door_css, unsafe_allow_html=True)
 
+# ==========================================
+# SECTION 5: Machine Learning Models
+# ==========================================
 def basic_model(read_book_ids: List[int]) -> List[int]:
-    """
-    Calculates recommendations using Item-Sim matrix and on-the-fly User-Sim.
-    """
+    """Calculates recommendations using Item-Sim matrix and on-the-fly User-Sim."""
     num_items = item_sim.shape[0]
     
-    # 1. Create the interaction vector
+    # Create the interaction vector for the current user
     user_vector = np.zeros(num_items)
     user_vector[read_book_ids] = 1
     
-    # 2. ITEM-BASED PREDICTION
+    # Calculate scores
     item_scores = item_sim.dot(user_vector)
-    
-    # 3. USER-BASED PREDICTION
     user_similarities = cosine_similarity(user_vector.reshape(1, -1), historic_users)
     user_scores = user_similarities.dot(historic_users).flatten()
     
-    # 4. HYBRID BLEND
-    alpha = 0.24  # Weight found through GridSearchCV 
+    # Blend and filter
+    alpha = 0.24  
     hybrid_scores = (alpha * item_scores) + ((1 - alpha) * user_scores)
+    hybrid_scores[read_book_ids] = -np.inf # Don't recommend read books
 
-    # 5. Filter out the books the user just selected so they aren't recommended
-    hybrid_scores[read_book_ids] = -np.inf
-
-    # 6. Get the top 10 highest scoring unread books
-    top_10_ids = np.argsort(hybrid_scores)[-10:][::-1].tolist()
-
-    return top_10_ids
+    # Return top 10 IDs
+    return np.argsort(hybrid_scores)[-10:][::-1].tolist()
 
 def premium_model(read_book_ids: List[int]) -> List[int]:
-    """
-    Calculates recommendations instantaneously using the pre-computed hybrid matrix.
-    """
+    """Calculates recommendations instantaneously using the pre-computed hybrid matrix."""
     num_items = hybrid_item_similarity.shape[0]
     
-    # 1. Create the interaction vector
     user_vector = np.zeros(num_items)
     user_vector[read_book_ids] = 1
     
-    # 2. Fast dot product against the hybrid matrix
     scores = hybrid_item_similarity.dot(user_vector)
-    
-    # 3. Filter out the books the user just selected
     scores[read_book_ids] = -np.inf
     
-    # 4. Get the top 10 highest scoring unread books
-    top_10_ids = np.argsort(scores)[-10:][::-1].tolist()
-    
-    return top_10_ids
+    return np.argsort(scores)[-10:][::-1].tolist()
 
+# ==========================================
+# SECTION 6: Popups & Dialogs
+# ==========================================
 @st.dialog("🍪 Mandatory Cookie Policy 🍪")
 def cookie_popup():
+    """Forces the user to accept cookies before using the app."""
     st.write("We use cookies to track your reading habits, judge your taste in literature, and sell your data to alien overlords. By clicking accept, you agree to these (totally reasonable) terms.")
     if st.button("I Accept (Like I have a choice)"):
         st.session_state.cookies_accepted = True
@@ -189,6 +167,7 @@ def cookie_popup():
 
 @st.dialog("💸 Premium Subscription Required")
 def premium_popup(read_book_ids: List[int], df_catalog: pd.DataFrame):
+    """The paywall popup with the hidden Rickroll."""
     st.write("Our Premium Model requires an active subscription of $42/month.")
     st.write("Click continue to complete your payment.")
     
@@ -204,24 +183,24 @@ def premium_popup(read_book_ids: List[int], df_catalog: pd.DataFrame):
     st.markdown(html_button, unsafe_allow_html=True)
     
     with st.spinner("Processing Payment..."):
-        # Pass the extracted IDs directly into the model
         top_10_ids = premium_model(read_book_ids) 
-        
-        # Save to session state and rerun to trigger State 3 (Results Display)
         st.session_state.predictions = df_catalog.loc[top_10_ids]
         st.rerun() 
     
     if st.button("Cancel & Use Basic Model"):
         st.rerun()
 
-# Enforce Cookies first
+# ==========================================
+# SECTION 7: Main Application Flow (State Machine)
+# ==========================================
+
+# --- STATE 0: Enforce Cookies ---
 if not st.session_state.cookies_accepted:
     cookie_popup()
     st.stop()
 
-# STATE 1: Registration / Login
+# --- STATE 1: Registration / Login ---
 if not st.session_state.logged_in:
-    # Set Background 1 (Replace with your actual URL or Base64 string)
     set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
     st.title("Welcome to the Recommender")
@@ -240,22 +219,19 @@ if not st.session_state.logged_in:
             else:
                 st.error("Please enter both a username and password.")
 
-# STATE 2: Selection & Prediction
+# --- STATE 2: Selection & Prediction ---
 elif st.session_state.predictions is None:
     set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
     # Trigger the CSS animation if they just logged in
     if st.session_state.just_registered:
         door_animation()
-        # Reset the flag so it doesn't happen on every click
         st.session_state.just_registered = False
 
     st.title("Find Your Next Great Read")
     
-    # 1. Clean the catalog to ensure no missing titles/authors crash the UI
+    # Clean the catalog and create dropdown options
     clean_catalog = df_catalog.dropna(subset=['Title', 'Author'])
-    
-    # 2. Vectorized dictionary creation (100x faster and safer than iterrows)
     book_options = clean_catalog['Title'].astype(str) + " by " + clean_catalog['Author'].astype(str)
     book_options_dict = dict(zip(book_options, clean_catalog.index))
     
@@ -271,7 +247,6 @@ elif st.session_state.predictions is None:
         if len(selected_book_strings) != 3:
             st.warning("Please select exactly 3 books.")
         else:
-            # Convert the selected strings directly into a list of integer IDs
             read_book_ids = [book_options_dict[string] for string in selected_book_strings]
             
             if model_choice == "Next-Gen (Premium)":
@@ -282,21 +257,21 @@ elif st.session_state.predictions is None:
                     st.session_state.predictions = df_catalog.loc[top_10_ids]
                     st.rerun()
 
-# STATE 3: Results Display
+# --- STATE 3: Results Display ---
 else:
-    # Set Background 2 (Replace with your actual URL)
     set_background("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
     st.title("Your Top 10 Recommendations")
+    
     if st.button("Start Over"):
         st.session_state.predictions = None
         st.rerun()
         
     st.markdown("---")
     
-    # Display the results in a grid (2 columns wide for better aesthetics)
     results_df = st.session_state.predictions
     
+    # Display the results in a 2-column grid
     for i in range(0, len(results_df), 2):
         cols = st.columns(2)
         

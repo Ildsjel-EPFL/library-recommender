@@ -7,11 +7,6 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from typing import List
 
-# from utils.helpers import set_background
-# from utils.data import load_catalog, DATA_DIR
-# from utils.pop_ups import cookie_popup, premium_popup
-# from utils.models import basic_model, premium_model
-
 st.set_page_config(page_title="The Ultimate Book Recommender", layout="wide")
 
 # Initialize our session states
@@ -69,28 +64,6 @@ def set_background(image_url):
     :return: None
     """
         
-    page_bg_img = f"""
-    <style>
-    .stApp {{
-        background-image: url("{image_url}");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }}
-    /* Adding a dark overlay so text remains readable */
-    .stApp > header {{
-        background-color: transparent;
-    }}
-    .block-container {{
-        background-color: rgba(0, 0, 0, 0.7);
-        padding: 2rem;
-        border-radius: 10px;
-    }}
-    </style>
-    """
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-
-    # V2: If you want to add a semi-transparent overlay for better text readability, you can modify the CSS like this:
     # page_bg_img = f"""
     # <style>
     # .stApp {{
@@ -99,7 +72,10 @@ def set_background(image_url):
     #     background-position: center;
     #     background-attachment: fixed;
     # }}
-    # .stApp > header {{ background-color: transparent; }}
+    # /* Adding a dark overlay so text remains readable */
+    # .stApp > header {{
+    #     background-color: transparent;
+    # }}
     # .block-container {{
     #     background-color: rgba(0, 0, 0, 0.7);
     #     padding: 2rem;
@@ -108,6 +84,25 @@ def set_background(image_url):
     # </style>
     # """
     # st.markdown(page_bg_img, unsafe_allow_html=True)
+
+    # V2: If you want to add a semi-transparent overlay for better text readability, you can modify the CSS like this:
+    page_bg_img = f"""
+    <style>
+    .stApp {{
+        background-image: url("{image_url}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }}
+    .stApp > header {{ background-color: transparent; }}
+    .block-container {{
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 2rem;
+        border-radius: 10px;
+    }}
+    </style>
+    """
+    st.markdown(page_bg_img, unsafe_allow_html=True)
 
 # def basic_model(selected_books : List[str], catalog_df : pd.DataFrame) -> List[int]:
 #     # item_sim, historic_users = load_assets_basic()

@@ -1,9 +1,11 @@
 import streamlit as st
 import pandas as pd
-import time
+import os
+import gdown
+import numpy as np
 
 from utils.helpers import set_background
-from utils.data import load_assets, load_catalog
+from utils.data import load_catalog, DATA_DIR
 from utils.pop_ups import cookie_popup, premium_popup
 from utils.models import basic_model, premium_model
 
@@ -19,7 +21,41 @@ if "predictions" not in st.session_state:
 if "trigger_rickroll" not in st.session_state:
     st.session_state.trigger_rickroll = False
 
-df_catalog = load_catalog()
+@st.cache_data(show_spinner="Downloading data from Google Drive... This only happens once!")
+def load_data():
+    ITEM_SIM_ID = "https://drive.google.com/file/d/1yPC8D1nLAcQ_Uzenx8iRXrKzDfLCpzJR/view?usp=sharing" 
+    DATA_MTX_ID = "https://drive.google.com/file/d/1AZiKe2ArhSAKSDl3p5T17PnC5r8imgSz/view?usp=sharing"
+    HYBRID_ITEM_SIM_ID = "https://drive.google.com/file/d/143JXstEzTcdokhwDNqEgIfjS7gvs0fF6/view?usp=sharing"
+
+    # Define local file paths
+    os.makedirs("data", exist_ok=True)
+    item_sim_path = "data/item_similarity.npy"
+    data_mtx_path = "data/full_data_mtx.npy"
+    hybrid_item_similarity_path = "data/enriched_items_merge_openlibrary_googlebooksAPI.csv"
+
+    # Download Item Similarity if it doesn't exist
+    if not os.path.exists(item_sim_path):
+        gdown.download(id=ITEM_SIM_ID, output=item_sim_path, quiet=False)
+
+    # Download User-Item Matrix if it doesn't exist
+    if not os.path.exists(data_mtx_path):
+        gdown.download(id=DATA_MTX_ID, output=data_mtx_path, quiet=False)
+
+    # Download Catalog if it doesn't exist
+    if not os.path.exists(hybrid_item_similarity_path):
+        gdown.download(id=HYBRID_ITEM_SIM_ID, output=hybrid_item_similarity_path, quiet=False)
+
+    # Load the downloaded files
+    # Use mmap_mode='r' for the massive .npy files to save RAM
+    item_sim = np.load(item_sim_path, mmap_mode='r')
+    historic_users = np.load(data_mtx_path, mmap_mode='r')
+    hybrid_item_similarity = pd.read_csv(hybrid_item_similarity_path, mmap_mode='r')
+
+    df_catalog = pd.read_csv(DATA_DIR / "enriched_items_merge_openlibrary_googlebooksAPI.csv", index_col='i')
+
+    return item_sim, historic_users, hybrid_item_similarity, df_catalog
+
+item_sim, historic_users, hybrid_item_similarity, df_catalog = load_data()
 
 # Enforce Cookies first
 if not st.session_state.cookies_accepted:

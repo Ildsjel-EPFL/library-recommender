@@ -31,21 +31,6 @@ def load_catalog() -> pd.DataFrame:
         'cover_url': ['https://via.placeholder.com/150x200?text=Dune'] * 5 
     })
 
-# def df_loader() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, int, int]:
-#     """
-#     Load the interactions, items, and enriched items dataframes, and return them along with the number of unique users and items.   
-    
-#     :return: A tuple containing the interactions dataframe, items dataframe, enriched items dataframe, number of unique users, and number of unique items.
-#     :rtype: Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, int, int]"""
-#     interactions = pd.read_csv(INTERACTIONS_PATH)
-#     interactions.columns = ['u', 'i', 't']
-#     items = pd.read_csv(ITEMS_PATH)
-#     df = pd.read_csv(ENRICHED_ITEMS_PATH)
-
-#     n_users = interactions['u'].nunique()
-#     n_items = items['i'].nunique()
-#     return interactions, items, df, n_users, n_items
-
 def load_assets_basic():
     # Load Item Similarity
     item_sim = np.load(DATA_DIR / "item_similarity.npy", mmap_mode='r')
@@ -59,5 +44,5 @@ def load_assets_basic():
     return item_sim, historic_users#, books_df
 
 def load_assets_premium():
-    similarity_matrix = np.load("data/hybrid_item_similarity.npy", mmap_mode='r')
+    similarity_matrix = np.load(DATA_DIR / "hybrid_item_similarity.npy", mmap_mode='r')
     return similarity_matrix

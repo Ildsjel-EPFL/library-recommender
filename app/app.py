@@ -24,7 +24,7 @@ if "predictions" not in st.session_state:
 if "trigger_rickroll" not in st.session_state:
     st.session_state.trigger_rickroll = False
 
-@st.cache_data(show_spinner="Downloading data from Google Drive... This only happens once!")
+@st.cache_resource(show_spinner="Downloading data from Google Drive... This only happens once!")
 def load_data():
     ITEM_SIM_ID = "1yPC8D1nLAcQ_Uzenx8iRXrKzDfLCpzJR" 
     DATA_MTX_ID = "1AZiKe2ArhSAKSDl3p5T17PnC5r8imgSz"
@@ -340,8 +340,12 @@ elif st.session_state.predictions is None:
     
     st.title("Find Your Next Great Read")
     
-    # Create a dictionary mapping the display string to the actual integer ID
-    book_options_dict = {f"{row['Title']} by {row['Author']}": idx for idx, row in df_catalog.iterrows()}
+    # 1. Clean the catalog to ensure no missing titles/authors crash the UI
+    clean_catalog = df_catalog.dropna(subset=['Title', 'Author'])
+    
+    # 2. Vectorized dictionary creation (100x faster and safer than iterrows)
+    book_options = clean_catalog['Title'].astype(str) + " by " + clean_catalog['Author'].astype(str)
+    book_options_dict = dict(zip(book_options, clean_catalog.index))
     
     selected_book_strings = st.multiselect(
         "Select the last 3 books you read:", 

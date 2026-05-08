@@ -394,7 +394,7 @@ else:
             with cols[0]:
                 sub_cols = st.columns([1, 2])
                 with sub_cols[0]:
-                    st.image(book['Cover_URL'], use_container_width=True)
+                    st.image(book['cover_url'], use_container_width=True)
                 with sub_cols[1]:
                     st.subheader(f"#{i+1}: {book['Title']}")
                     st.write(f"**Author:** {book['Author']}")
@@ -406,7 +406,7 @@ else:
             with cols[1]:
                 sub_cols = st.columns([1, 2])
                 with sub_cols[0]:
-                    st.image(book['Cover_URL'], use_container_width=True)
+                    st.image(book['cover_url'], use_container_width=True)
                 with sub_cols[1]:
                     st.subheader(f"#{i+2}: {book['Title']}")
                     st.write(f"**Author:** {book['Author']}")

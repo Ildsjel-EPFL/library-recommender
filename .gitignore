@@ -1,3 +1,7 @@
 data/hf_login.txt
 tests/test_api.ipynb
 tests/hybrid_item_similarity_e5.npy
+tests/test_api.ipynb
+data/full_data_mtx.npy
+data/item_similarity.npy
+data/hybrid_item_similarity.npy

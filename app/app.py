@@ -31,7 +31,7 @@ def load_data():
     os.makedirs("data", exist_ok=True)
     item_sim_path = "data/item_similarity.npy"
     data_mtx_path = "data/full_data_mtx.npy"
-    hybrid_item_similarity_path = "data/enriched_items_merge_openlibrary_googlebooksAPI.csv"
+    hybrid_item_similarity_path = "data/hybrid_item_similarity.npy"
 
     # Download Item Similarity if it doesn't exist
     if not os.path.exists(item_sim_path):

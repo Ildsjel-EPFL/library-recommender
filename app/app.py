@@ -202,7 +202,7 @@ if not st.session_state.cookies_accepted:
 # --- STATE 1: Registration / Login ---
 if not st.session_state.logged_in:
     # set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
-    set_background("https://www.dndspeak.com/wp-content/uploads/2021/03/DungeonDoor-1.jpg")
+    set_background("https://i1-c.pinimg.com/1200x/b2/26/fb/b226fbeb41e4d09dbfd366122585594c.jpg")
     
     st.title("Welcome to the Recommender")
     st.subheader("Please register to continue")

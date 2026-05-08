@@ -224,12 +224,6 @@ if not st.session_state.logged_in:
     # Set Background 1 (Replace with your actual URL or Base64 string)
     set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
-    # Trigger the CSS animation if they just logged in
-    if st.session_state.just_registered:
-        door_animation()
-        # Reset the flag so it doesn't happen on every click
-        st.session_state.just_registered = False
-
     st.title("Welcome to the Recommender")
     st.subheader("Please register to continue")
     
@@ -249,6 +243,12 @@ if not st.session_state.logged_in:
 elif st.session_state.predictions is None:
     set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
+    # Trigger the CSS animation if they just logged in
+    if st.session_state.just_registered:
+        door_animation()
+        # Reset the flag so it doesn't happen on every click
+        st.session_state.just_registered = False
+
     st.title("Find Your Next Great Read")
     
     # 1. Clean the catalog to ensure no missing titles/authors crash the UI

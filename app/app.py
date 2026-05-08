@@ -104,6 +104,32 @@ def set_background(image_url):
     """
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
+def door_animation():
+    """Injects CSS to create a full-screen opening door effect."""
+    door_css = """
+    <style>
+    .door-left, .door-right {
+        position: fixed;
+        top: 0;
+        width: 50vw;
+        height: 100vh;
+        background-color: #111;
+        z-index: 9999;
+        animation: openDoor 2s ease-in-out forwards;
+        animation-delay: 0.5s; /* Slight pause before opening */
+    }
+    .door-left { left: 0; transform-origin: left; border-right: 2px solid #fff; }
+    .door-right { right: 0; transform-origin: right; border-left: 2px solid #fff; }
+    
+    @keyframes openDoor {
+        100% { width: 0vw; opacity: 0; display: none; }
+    }
+    </style>
+    <div class="door-left"></div>
+    <div class="door-right"></div>
+    """
+    st.markdown(door_css, unsafe_allow_html=True)
+
 def basic_model(read_book_ids: List[int]) -> List[int]:
     """
     Calculates recommendations using Item-Sim matrix and on-the-fly User-Sim.
@@ -198,6 +224,12 @@ if not st.session_state.logged_in:
     # Set Background 1 (Replace with your actual URL or Base64 string)
     set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
+    # Trigger the CSS animation if they just logged in
+    if st.session_state.just_registered:
+        door_animation()
+        # Reset the flag so it doesn't happen on every click
+        st.session_state.just_registered = False
+
     st.title("Welcome to the Recommender")
     st.subheader("Please register to continue")
     

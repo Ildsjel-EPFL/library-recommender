@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-from data import load_assets_basic, load_assets_premium
+from utils.data import load_assets_basic, load_assets_premium
 from typing import List
 
 

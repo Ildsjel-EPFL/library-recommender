@@ -101,7 +101,7 @@ def door_animation():
         top: 0;
         width: 50vw;
         height: 100vh;
-        background-color: #111;
+        background-color: transparent;
         z-index: 9999;
         animation: openDoor 2s ease-in-out forwards;
         animation-delay: 0.5s;

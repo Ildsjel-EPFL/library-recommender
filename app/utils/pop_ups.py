@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from models import premium_model
+from utils.models import premium_model
 
 @st.dialog("🍪 Mandatory Cookie Policy 🍪")
 def cookie_popup():

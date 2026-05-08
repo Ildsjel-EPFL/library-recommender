@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import time
-from data import DATA_DIR
+# from data import DATA_DIR
 
 def set_background(image_url):
     """

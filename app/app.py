@@ -173,7 +173,7 @@ def basic_model(read_book_ids: List[int]) -> List[int]:
     # num_items = max(item_sim.shape[0], df_catalog.index[-1]+1)  # Ensure we cover all catalog items
     
     # Create the interaction vector for the current user
-    user_vector = np.zeros(num_items, int(df_catalog.index[-1])+1)
+    user_vector = np.zeros((num_items, int(df_catalog.index[-1])+1))
     user_vector[read_book_ids] = 1
     
     # Calculate scores

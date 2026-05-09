@@ -275,7 +275,7 @@ elif st.session_state.predictions is None:
         door_animation()
         st.session_state.just_registered = False
 
-    st.title("Find Your Next Great Read")
+    st.title("Find Your Next Great Read"+f"{df_catalog.columns}")
     
     # Clean the catalog and create dropdown options
     clean_catalog = df_catalog.dropna(subset=['Title', 'Author'])

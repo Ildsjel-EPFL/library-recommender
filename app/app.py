@@ -73,6 +73,7 @@ item_sim, historic_users, hybrid_item_similarity, df_catalog = load_data()
 
 # Add a placeholder image URL for books that truly have no cover anywhere
 PLACEHOLDER_COVER = "https://via.placeholder.com/150x200.png?text=No+Cover+Available"
+PLACEHOLDER_COVER = "http://books.google.com/books/content?id=62DPEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
 
 @st.cache_data(show_spinner=False, ttl=86400) # Cache clears after 24 hours
 def get_cover_on_the_fly(isbn_data):

@@ -88,7 +88,7 @@ def get_cover_on_the_fly(isbn_data):
             except (ValueError, SyntaxError):
                 isbns = []
         else:
-            isbns = [i.strip() for i in isbn_data.split(',')]
+            isbns = [i.strip() for i in isbn_data.split(';')]
     elif isinstance(isbn_data, list):
         isbns = isbn_data
     else:

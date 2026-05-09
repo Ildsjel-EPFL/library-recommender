@@ -71,8 +71,6 @@ def load_data():
 # Actually trigger the load_data function
 item_sim, historic_users, hybrid_item_similarity, df_catalog = load_data()
 
-print(f"Data Loaded: Item Sim Shape={item_sim.shape}, Historic Users Shape={historic_users.shape}, Hybrid Item Sim Shape={hybrid_item_similarity.shape}, Catalog Shape={df_catalog.shape}")
-
 # Add a placeholder image URL for books that truly have no cover anywhere
 PLACEHOLDER_COVER = "https://via.placeholder.com/150x200.png?text=No+Cover+Available"
 PLACEHOLDER_COVER = "http://books.google.com/books/content?id=62DPEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
@@ -207,7 +205,7 @@ def premium_model(read_book_ids: List[int]) -> List[int]:
 @st.dialog("🍪 Mandatory Cookie Policy 🍪")
 def cookie_popup():
     """Forces the user to accept cookies before using the app."""
-    st.write("We use cookies to track your reading habits, judge your taste in literature, and sell your data to alien overlords. By clicking accept, you agree to these (totally reasonable) terms.")
+    st.write("We use cookies to track your reading habits, judge your taste in literature, and sell your data to alien overlords. By clicking accept, you agree to these (totally reasonable) terms.\n"+f"Data Loaded: Item Sim Shape={item_sim.shape}, Historic Users Shape={historic_users.shape}, Hybrid Item Sim Shape={hybrid_item_similarity.shape}, Catalog Shape={df_catalog.shape}")
     if st.button("I Accept (Like I have a choice)"):
         st.session_state.cookies_accepted = True
         st.rerun()

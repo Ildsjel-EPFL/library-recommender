@@ -111,10 +111,10 @@ Overall, we first build the interaction matrix, then uses it in two ways: compar
 
 # Performance table
 
-|  | User-to-user | Item-to-item | Alternative technique 1 | Alternative technique 2 |
+|  | User-to-user | Item-to-item | Hybrid Neural Collaborative Filtering | Hybrid Matrix |
 |---|---|---|---|---|
-| Precision@10 |  |  |  |  |
-| Recall@10 |  |  |  |  |
+| Precision@10 | 0.0565 | 0.0557 | 0.0021 | 0.0628 |
+| Recall@10 | 0.2904 | 0.2641 | 0.0106 | 0.3067 |
 
 # Discussion
 

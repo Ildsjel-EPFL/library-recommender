@@ -74,7 +74,7 @@ item_sim, historic_users, hybrid_item_similarity, df_catalog = load_data()
 
 # Add a placeholder image URL for books that truly have no cover anywhere
 PLACEHOLDER_COVER = "https://via.placeholder.com/150x200.png?text=No+Cover+Available"
-PLACEHOLDER_COVER = "http://books.google.com/books/content?id=62DPEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+PLACEHOLDER_COVER = "https://cdnattic.atticbooks.co.ke/img/Z665993.jpg"
 
 @st.cache_data(show_spinner=False, ttl=86400) # Cache clears after 24 hours
 def get_cover_on_the_fly(isbn_data):
@@ -170,11 +170,16 @@ def door_animation():
 def basic_model(read_book_ids: List[int]) -> List[int]:
     """Calculates recommendations using Item-Sim matrix and on-the-fly User-Sim."""
     num_items = item_sim.shape[0]
-    # num_items = max(item_sim.shape[0], df_catalog.index[-1]+1)  # Ensure we cover all catalog items
+    
+    # 1. NEW: Filter out books that don't exist in our interaction matrices
+    valid_book_ids = [book_id for book_id in read_book_ids if book_id < num_items]
     
     # Create the interaction vector for the current user
-    user_vector = np.zeros((num_items, int(df_catalog.index[-1])+1))
-    user_vector[read_book_ids] = 1
+    user_vector = np.zeros(num_items)
+    
+    # 2. NEW: Only assign 1s if there are valid books
+    if valid_book_ids: 
+        user_vector[valid_book_ids] = 1
     
     # Calculate scores
     item_scores = item_sim.dot(user_vector)
@@ -184,7 +189,10 @@ def basic_model(read_book_ids: List[int]) -> List[int]:
     # Blend and filter
     alpha = 0.24  
     hybrid_scores = (alpha * item_scores) + ((1 - alpha) * user_scores)
-    # hybrid_scores[read_book_ids] = -np.inf # Don't recommend read books
+    
+    # 3. NEW: Only mask out the valid books (the out-of-bounds ones aren't in this array anyway)
+    if valid_book_ids:
+        hybrid_scores[valid_book_ids] = -np.inf 
 
     # Return top 10 IDs
     return np.argsort(hybrid_scores)[-10:][::-1].tolist()

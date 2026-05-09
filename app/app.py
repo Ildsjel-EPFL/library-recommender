@@ -331,7 +331,7 @@ else:
                     cover_to_display = book['cover_url']
                     if pd.isna(cover_to_display) or not str(cover_to_display).strip():
                         # Replace 'isbn' below with your actual ISBN column name!
-                        cover_to_display = get_cover_on_the_fly(book['isbn'])
+                        cover_to_display = get_cover_on_the_fly(book['ISBN Valid'])
                     
                     st.image(cover_to_display, use_container_width=True)
                     # ------------------------
@@ -350,7 +350,7 @@ else:
                     cover_to_display = book['cover_url']
                     if pd.isna(cover_to_display) or not str(cover_to_display).strip():
                         # Replace 'isbn' below with your actual ISBN column name!
-                        cover_to_display = get_cover_on_the_fly(book['isbn'])
+                        cover_to_display = get_cover_on_the_fly(book['ISBN Valid'])
                         
                     st.image(cover_to_display, use_container_width=True)
                     # ------------------------

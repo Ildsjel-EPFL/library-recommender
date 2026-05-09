@@ -168,7 +168,7 @@ def door_animation():
 # ==========================================
 def basic_model(read_book_ids: List[int]) -> List[int]:
     """Calculates recommendations using Item-Sim matrix and on-the-fly User-Sim."""
-    num_items = item_sim.shape[0]
+    num_items = df_catalog.shape[0]
     
     # Create the interaction vector for the current user
     user_vector = np.zeros(num_items)
@@ -182,20 +182,20 @@ def basic_model(read_book_ids: List[int]) -> List[int]:
     # Blend and filter
     alpha = 0.24  
     hybrid_scores = (alpha * item_scores) + ((1 - alpha) * user_scores)
-    hybrid_scores[read_book_ids] = -np.inf # Don't recommend read books
+    # hybrid_scores[read_book_ids] = -np.inf # Don't recommend read books
 
     # Return top 10 IDs
     return np.argsort(hybrid_scores)[-10:][::-1].tolist()
 
 def premium_model(read_book_ids: List[int]) -> List[int]:
     """Calculates recommendations instantaneously using the pre-computed hybrid matrix."""
-    num_items = hybrid_item_similarity.shape[0]
+    num_items = df_catalog.shape[0]
     
     user_vector = np.zeros(num_items)
     user_vector[read_book_ids] = 1
     
     scores = hybrid_item_similarity.dot(user_vector)
-    scores[read_book_ids] = -np.inf
+    # scores[read_book_ids] = -np.inf
     
     return np.argsort(scores)[-10:][::-1].tolist()
 

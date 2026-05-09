@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import gdown
 import numpy as np
+import requests
+import ast
 
 from sklearn.metrics.pairwise import cosine_similarity
 from typing import List
@@ -68,6 +70,48 @@ def load_data():
 
 # Actually trigger the load_data function
 item_sim, historic_users, hybrid_item_similarity, df_catalog = load_data()
+
+# Add a placeholder image URL for books that truly have no cover anywhere
+PLACEHOLDER_COVER = "https://via.placeholder.com/150x200.png?text=No+Cover+Available"
+
+@st.cache_data(show_spinner=False, ttl=86400) # Cache clears after 24 hours
+def get_cover_on_the_fly(isbn_data):
+    """Fetches a cover from OpenLibrary only when needed."""
+    if pd.isna(isbn_data) or not isbn_data:
+        return PLACEHOLDER_COVER
+        
+    # Parse the ISBNs
+    if isinstance(isbn_data, str):
+        if isbn_data.startswith('['):
+            try:
+                isbns = ast.literal_eval(isbn_data)
+            except (ValueError, SyntaxError):
+                isbns = []
+        else:
+            isbns = [i.strip() for i in isbn_data.split(',')]
+    elif isinstance(isbn_data, list):
+        isbns = isbn_data
+    else:
+        isbns = [str(isbn_data)]
+
+    # Test the ISBNs against the API
+    for isbn in isbns:
+        clean_isbn = str(isbn).replace('-', '').replace(' ', '')
+        if not clean_isbn:
+            continue
+            
+        test_url = f"https://covers.openlibrary.org/b/isbn/{clean_isbn}-L.jpg?default=false"
+        
+        try:
+            # Quick HEAD request to check if it exists
+            response = requests.head(test_url, timeout=2)
+            if response.status_code == 200:
+                return f"https://covers.openlibrary.org/b/isbn/{clean_isbn}-L.jpg"
+        except requests.RequestException:
+            continue
+            
+    # If all ISBNs fail, return the placeholder
+    return PLACEHOLDER_COVER
 
 # ==========================================
 # SECTION 4: UI & Aesthetic Functions
@@ -283,7 +327,14 @@ else:
             with cols[0]:
                 sub_cols = st.columns([1, 2])
                 with sub_cols[0]:
-                    st.image(book['cover_url'], use_container_width=True)
+                    # --- ON-THE-FLY CHECK ---
+                    cover_to_display = book['cover_url']
+                    if pd.isna(cover_to_display) or not str(cover_to_display).strip():
+                        # Replace 'isbn' below with your actual ISBN column name!
+                        cover_to_display = get_cover_on_the_fly(book['isbn'])
+                    
+                    st.image(cover_to_display, use_container_width=True)
+                    # ------------------------
                 with sub_cols[1]:
                     st.subheader(f"#{i+1}: {book['Title']}")
                     st.write(f"**Author:** {book['Author']}")
@@ -295,7 +346,14 @@ else:
             with cols[1]:
                 sub_cols = st.columns([1, 2])
                 with sub_cols[0]:
-                    st.image(book['cover_url'], use_container_width=True)
+                    # --- ON-THE-FLY CHECK ---
+                    cover_to_display = book['cover_url']
+                    if pd.isna(cover_to_display) or not str(cover_to_display).strip():
+                        # Replace 'isbn' below with your actual ISBN column name!
+                        cover_to_display = get_cover_on_the_fly(book['isbn'])
+                        
+                    st.image(cover_to_display, use_container_width=True)
+                    # ------------------------
                 with sub_cols[1]:
                     st.subheader(f"#{i+2}: {book['Title']}")
                     st.write(f"**Author:** {book['Author']}")

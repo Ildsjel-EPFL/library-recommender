@@ -333,7 +333,7 @@ else:
                         # Replace 'isbn' below with your actual ISBN column name!
                         cover_to_display = get_cover_on_the_fly(book['ISBN Valid'])
                     
-                    st.image(cover_to_display, use_container_width=True)
+                    st.image(cover_to_display, width='stretch')
                     # ------------------------
                 with sub_cols[1]:
                     st.subheader(f"#{i+1}: {book['Title']}")
@@ -352,7 +352,7 @@ else:
                         # Replace 'isbn' below with your actual ISBN column name!
                         cover_to_display = get_cover_on_the_fly(book['ISBN Valid'])
                         
-                    st.image(cover_to_display, use_container_width=True)
+                    st.image(cover_to_display, width='stretch')
                     # ------------------------
                 with sub_cols[1]:
                     st.subheader(f"#{i+2}: {book['Title']}")

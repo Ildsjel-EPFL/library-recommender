@@ -38,12 +38,14 @@ def load_data():
     ITEM_SIM_ID = "1yPC8D1nLAcQ_Uzenx8iRXrKzDfLCpzJR" 
     DATA_MTX_ID = "1AZiKe2ArhSAKSDl3p5T17PnC5r8imgSz"
     HYBRID_ITEM_SIM_ID = "143JXstEzTcdokhwDNqEgIfjS7gvs0fF6"
+    ITEMS_CSV_ID = "1xUwfA2SKZM-sN6x2wiKypN9KQyAZBd5C"
 
     # Define local file paths
     os.makedirs("data", exist_ok=True)
     item_sim_path = "data/item_similarity.npy"
     data_mtx_path = "data/full_data_mtx.npy"
     hybrid_item_similarity_path = "data/hybrid_item_similarity.npy"
+    items_csv_parth = "data/enriched_items_merge_openlibrary_googlebooksAPI_v2.csv"
 
     # Download Item Similarity if it doesn't exist
     if not os.path.exists(item_sim_path):
@@ -57,6 +59,9 @@ def load_data():
     if not os.path.exists(hybrid_item_similarity_path):
         gdown.download(id=HYBRID_ITEM_SIM_ID, output=hybrid_item_similarity_path, quiet=False)
 
+    if not os.path.exists(items_csv_parth):
+        gdown.download(id=ITEMS_CSV_ID, output=items_csv_parth, quiet=False)
+
     # Load the downloaded files
     # Use mmap_mode='r' for the massive .npy files to prevent RAM crashes
     item_sim = np.load(item_sim_path, mmap_mode='r')
@@ -64,7 +69,7 @@ def load_data():
     hybrid_item_similarity = np.load(hybrid_item_similarity_path, mmap_mode='r')
 
     # Load the catalog
-    df_catalog = pd.read_csv("data/enriched_items_merge_openlibrary_googlebooksAPI.csv", index_col='i')
+    df_catalog = pd.read_csv(items_csv_parth, index_col='i')
 
     return item_sim, historic_users, hybrid_item_similarity, df_catalog
 

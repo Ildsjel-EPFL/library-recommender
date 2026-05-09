@@ -169,7 +169,8 @@ def door_animation():
 # ==========================================
 def basic_model(read_book_ids: List[int]) -> List[int]:
     """Calculates recommendations using Item-Sim matrix and on-the-fly User-Sim."""
-    num_items = item_sim.shape[0]
+    # num_items = item_sim.shape[0]
+    num_items = max(item_sim.shape[0], df_catalog.index[-1]+1)  # Ensure we cover all catalog items
     
     # Create the interaction vector for the current user
     user_vector = np.zeros(max(num_items, df_catalog.index[-1]+1))

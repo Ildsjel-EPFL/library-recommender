@@ -51,8 +51,8 @@ elif st.session_state.predictions is None:
 
     st.title("Seek thou the destiny-bound chronicle that even now awakens to thy touch, for the vellum of thy next great legend awaits its unfolding.", text_alignment="center")
     
-    clean_catalog = df_catalog.dropna(subset=['Title', 'Author'])
-    book_options = clean_catalog['Title'].astype(str) + " by " + clean_catalog['Author'].astype(str)
+    clean_catalog = df_catalog.dropna(subset=["Title", "Author"])
+    book_options = clean_catalog["Title"].astype(str) + " by " + clean_catalog["Author"].astype(str)
     book_options_dict = dict(zip(book_options, clean_catalog.index))
     
     selected_book_strings = st.multiselect("Select the last 3 books you read:", options=list(book_options_dict.keys()), max_selections=3)
@@ -94,9 +94,9 @@ else:
             with cols[0]:
                 sub_cols = st.columns([1, 2])
                 with sub_cols[0]:
-                    cover_to_display = book['cover_url']
+                    cover_to_display = book["cover_url"]
                     if pd.isna(cover_to_display) or not str(cover_to_display).strip():
-                        cover_to_display = get_cover_on_the_fly(book['ISBN Valid'])
+                        cover_to_display = get_cover_on_the_fly(book["ISBN Valid"])
                     st.image(cover_to_display, use_container_width=True)
                 with sub_cols[1]:
                     st.subheader(f"#{i+1}: {book['Title']}")
@@ -108,9 +108,9 @@ else:
             with cols[1]:
                 sub_cols = st.columns([1, 2])
                 with sub_cols[0]:
-                    cover_to_display = book['cover_url']
+                    cover_to_display = book["cover_url"]
                     if pd.isna(cover_to_display) or not str(cover_to_display).strip():
-                        cover_to_display = get_cover_on_the_fly(book['ISBN Valid'])
+                        cover_to_display = get_cover_on_the_fly(book["ISBN Valid"])
                     st.image(cover_to_display, use_container_width=True)
                 with sub_cols[1]:
                     st.subheader(f"#{i+2}: {book['Title']}")

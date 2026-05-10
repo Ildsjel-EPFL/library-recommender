@@ -27,10 +27,10 @@ def load_data():
     if not os.path.exists(hybrid_item_similarity_path):
         gdown.download(id=HYBRID_ITEM_SIM_ID, output=hybrid_item_similarity_path, quiet=False)
 
-    item_sim = np.load(item_sim_path, mmap_mode='r')
-    historic_users = np.load(data_mtx_path, mmap_mode='r')
-    hybrid_item_similarity = np.load(hybrid_item_similarity_path, mmap_mode='r')
-    df_catalog = pd.read_csv(items_csv_path, index_col='i')
+    item_sim = np.load(item_sim_path, mmap_mode="r")
+    historic_users = np.load(data_mtx_path, mmap_mode="r")
+    hybrid_item_similarity = np.load(hybrid_item_similarity_path, mmap_mode="r")
+    df_catalog = pd.read_csv(items_csv_path, index_col="i")
 
     return item_sim, historic_users, hybrid_item_similarity, df_catalog
 
@@ -41,20 +41,20 @@ def get_cover_on_the_fly(isbn_data):
         return PLACEHOLDER_COVER
         
     if isinstance(isbn_data, str):
-        if isbn_data.startswith('['):
+        if isbn_data.startswith("["):
             try:
                 isbns = ast.literal_eval(isbn_data)
             except (ValueError, SyntaxError):
                 isbns = []
         else:
-            isbns = [i.strip() for i in isbn_data.split(';')]
+            isbns = [i.strip() for i in isbn_data.split(";")]
     elif isinstance(isbn_data, list):
         isbns = isbn_data
     else:
         isbns = [str(isbn_data)]
 
     for isbn in isbns:
-        clean_isbn = str(isbn).replace('-', '').replace(' ', '')
+        clean_isbn = str(isbn).replace("-", "").replace(" ", "")
         if not clean_isbn:
             continue
             

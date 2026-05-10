@@ -212,19 +212,21 @@ def premium_model(read_book_ids: List[int]) -> List[int]:
 # ==========================================
 # SECTION 6: Popups & Dialogs
 # ==========================================
-@st.dialog("🍪 Mandatory Cookie Policy 🍪")
+@st.dialog("🍪 The Covenant of Lingering Echoes (Mandatory Cookie Policy) 🍪")
 def cookie_popup():
     """Forces the user to accept cookies before using the app."""
-    st.write("We use cookies to track your reading habits, judge your taste in literature, and sell your data to alien overlords. By clicking accept, you agree to these (totally reasonable) terms.")
+    # st.write("We use cookies to track your reading habits, judge your taste in literature, and sell your data to alien overlords. By clicking accept, you agree to these (totally reasonable) terms.")
+    st.write("To better illuminate thy path through these shifting archives, the Library must gather the crumbs of thy presence. These spectral memories allow the vellum to recognize thy spirit and the shadows to align with thy will. Wilt thou bind these fragments to thy journey, or shalt thou walk as a phantom, unremembered by the stone?")
     if st.button("I Accept (Like I have a choice)"):
         st.session_state.cookies_accepted = True
         st.rerun()
 
 @st.dialog("💸 Premium Subscription Required")
 def premium_popup(read_book_ids: List[int], df_catalog: pd.DataFrame):
-    """The paywall popup with the hidden Rickroll."""
-    st.write("Our Premium Model requires an active subscription of $42/month.")
-    st.write("Click continue to complete your payment.")
+    # st.write("Our Premium Model requires an active subscription of $42/month.")
+    st.write("To commune with the Exalted Archive, a living covenant must be struck; only through a recurring tribute of forty and two gilded discs shall the seal be broken and the high oracle’s voice remain unmuted for thy journey.")
+    # st.write("Click continue to complete your payment.")
+    st.write("Strike the final mark to fulfill thy tithe and bind the golden covenant.")
     
     youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     html_button = f"""
@@ -252,7 +254,7 @@ def premium_popup(read_book_ids: List[int], df_catalog: pd.DataFrame):
 
 # --- STATE 0: Enforce Cookies ---
 if not st.session_state.cookies_accepted:
-    set_background("https://www.radiofrance.fr/pikapi/images/32dd7474-24c6-4b55-a93c-9c48c3bde678/1200x680?webp=false")
+    set_background("https://i.pinimg.com/1200x/63/bb/ee/63bbee531be9b62c4396523d42e0c36e.jpg")
     cookie_popup()
     st.stop()
 
@@ -261,8 +263,9 @@ if not st.session_state.logged_in:
     # set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     set_background("https://github.com/Ildsjel-EPFL/library-recommender/blob/main/data/e33_doors.png?raw=true")
     
-    st.title("Welcome to the Recommender")
-    st.subheader("Please register to continue")
+    st.title("Greetings, seeker of the hidden and the high.", text_alignment="center")
+    st.subheader("Before you can step into the hallowed halls of literary wisdom, you must first prove your worth. Register your name and secret phrase to unlock the gates of knowledge and receive your personalized rune-song of book recommendations.")
+    # st.subheader("Speak your intent, seeker. Lay your secret phrase upon my grain, and I shall weave it into a rune-song fit for the annals of the wise.")
     
     with st.form("login_form"):
         username = st.text_input("Username")
@@ -286,7 +289,7 @@ elif st.session_state.predictions is None:
         door_animation()
         st.session_state.just_registered = False
 
-    st.title("Find Your Next Great Read", text_alignment="center")
+    st.title("Seek thou the destiny-bound chronicle that even now awakens to thy touch, for the vellum of thy next great legend awaits its unfolding.", text_alignment="center")
     
     # Clean the catalog and create dropdown options
     clean_catalog = df_catalog.dropna(subset=['Title', 'Author'])
@@ -301,7 +304,7 @@ elif st.session_state.predictions is None:
     
     model_choice = st.radio("Choose your AI Model:", ["Basic (Free)", "Next-Gen (Premium)"])
     
-    if st.button("Get Recommendations"):
+    if st.button("Beseech the silent oracle of the hallowed stacks, that the shifting shadows may reveal the one true codex destined to illuminate the path of thy spirit."):
         if len(selected_book_strings) != 3:
             st.warning("Please select exactly 3 books.")
         else:
@@ -319,7 +322,7 @@ elif st.session_state.predictions is None:
 else:
     set_background("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
-    st.title("Your Top 10 Recommendations")
+    st.title("Behold the Sacred Decad of the High Archives; ten echoes of truth plucked from the heart of the Great Silence, each a sovereign key to chambers long forgotten by the light of common day.")
     
     if st.button("Start Over"):
         st.session_state.predictions = None

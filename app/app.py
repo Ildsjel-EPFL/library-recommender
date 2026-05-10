@@ -212,7 +212,7 @@ def premium_model(read_book_ids: List[int]) -> List[int]:
 # ==========================================
 # SECTION 6: Popups & Dialogs
 # ==========================================
-@st.dialog("🍪 The Covenant of Lingering Echoes (Mandatory Cookie Policy) 🍪")
+@st.dialog("The Covenant of Lingering Echoes (Mandatory Cookie Policy)", icon="🍪")
 def cookie_popup():
     """Forces the user to accept cookies before using the app."""
     # st.write("We use cookies to track your reading habits, judge your taste in literature, and sell your data to alien overlords. By clicking accept, you agree to these (totally reasonable) terms.")
@@ -322,7 +322,7 @@ elif st.session_state.predictions is None:
 else:
     set_background("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
     
-    st.title("Behold the Sacred Decad of the High Archives; ten echoes of truth plucked from the heart of the Great Silence, each a sovereign key to chambers long forgotten by the light of common day.")
+    st.title("Behold the Sacred Decad of the High Archives; ten echoes of truth plucked from the heart of the Great Silence, each a sovereign key to chambers long forgotten by the light of common day.", text_alignment="center")
     
     if st.button("Start Over"):
         st.session_state.predictions = None

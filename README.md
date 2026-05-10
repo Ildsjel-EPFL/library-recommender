@@ -167,12 +167,38 @@ Despite its complexity, the Neural Collaborative Filtering model failed to provi
 
 # Comparison
 
-| **Method** | **Compares** | **Recommendation idea** |
-|---|---|---|
-| Item-based CF | Movies | Recommend movies similar to those already liked |
-| User-based CF | Users | Recommend movies liked by similar users |
+The key differences between the hybrid models and traditional Collaborative Filtering (CF) lie in the source of data, how similarity is calculated, and their ability to handle data sparsity.
 
-Overall, we first build the interaction matrix, then uses it in two ways: comparing items and comparing users. Both approaches rely on the idea that past interaction patterns can help predict future preferences.
+### Data Source: Behavior vs. Content
+
+* **Traditional CF (User-to-User / Item-to-Item)**: These models are "memory-based" and rely exclusively on a binary interaction matrix (1 if a user read a book, 0 otherwise). They do not know anything about the book's title, author, or genre.
+* **Hybrid Models (NCF & Matrix-Blend)**: Both models integrate Content-Based features. They use high-dimensional text embeddings from models to understand the semantic meaning of the books alongside the user behavior.
+
+### Similarity Calculation: Linear vs. Non-Linear
+
+* **Item-to-Item CF**: Calculates similarity using a direct cosine similarity dot-product between columns of the interaction matrix. It is a linear approach that looks for raw overlaps in who read what.
+* **Hybrid Matrix-Blending**: Enhances the item-item similarity by mathematically blending the behavioral similarity with a semantic text similarity matrix using a weighted "alpha" parameter.
+* **Hybrid NCF**: Moves away from direct similarity scores entirely. It uses a Multi-Layer Perceptron (MLP) to learn complex, non-linear interactions between user embeddings, item embeddings, and item metadata.
+
+### Handling Sparse Data (The Cold Start Problem)
+
+* **Traditional CF**: These models fail if there is no overlap between users or items. For instance, if a book has never been read, it can never be recommended because its column in the matrix is empty.
+* **Hybrid Models**: Because these models incorporate text embeddings (metadata), they can recommend a book even if it has zero interactions. The models can recognize that a new book's summary is similar to a book the user has enjoyed in the past.
+
+### Direct Linkage vs. Model Learning
+
+* **Traditional CF**: Memory-based CF doesn't "train", it just looks at raw overlaps. If User A and User B read the same two books, traditional CF instantly identifies them as similar.
+* **Hybrid NCF**: This is a "model-based" approach that requires thousands of training examples to update its internal weights. In sparse datasets (like ours, with a median of 6 interactions per user), NCF often struggles to find the same strong links that traditional CF finds instantly because it tries to learn patterns rather than just looking at the raw overlaps.
+
+### Summary Comparison Table
+
+| Feature | Traditional CF | Hybrid Matrix-Blend | Hybrid NCF |
+| --- | --- | --- | --- |
+| **Logic** | Raw Overlaps (Memory-based) | Blended Similarities | Deep Learning (Model-based) |
+| **Inputs** | User-Item Interactions only | Interactions + Text Embeddings | IDs + Text + Numbers |
+| **Cold Start** | Poor | Good | Good |
+| **Relationship** | Linear (Dot-product) | Linear (Weighted average) | Non-linear (MLP layers) |
+| **Speed** | Moderate | Very Fast | Slower (requires GPU training) |
 
 # Performance table
 

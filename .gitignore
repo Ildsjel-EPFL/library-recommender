@@ -1,7 +1,10 @@
-data/hf_login.txt
-tests/test_api.ipynb
-tests/hybrid_item_similarity_e5.npy
-tests/test_api.ipynb
-data/full_data_mtx.npy
-data/item_similarity.npy
-data/hybrid_item_similarity.npy
+archives/data/hf_login.txt
+archives/tests/test_api.ipynb
+archives/tests/hybrid_item_similarity_e5.npy
+archives/tests/test_api.ipynb
+archives/data/item_similarity.npy
+archives/data/api_key.txt
+archives/models/full_data_mtx.npy
+archives/models/item_similarity.npy
+archives/models/hybrid_item_similarity.npy
+archives/models/hybrid_item_similarity_e5.npy

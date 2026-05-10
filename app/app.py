@@ -252,7 +252,7 @@ def premium_popup(read_book_ids: List[int], df_catalog: pd.DataFrame):
 
 # --- STATE 0: Enforce Cookies ---
 if not st.session_state.cookies_accepted:
-    # set_background("https://i1-c.pinimg.com/1200x/b2/26/fb/b226fbeb41e4d09dbfd366122585594c.jpg")
+    set_background("https://www.radiofrance.fr/pikapi/images/32dd7474-24c6-4b55-a93c-9c48c3bde678/1200x680?webp=false")
     cookie_popup()
     st.stop()
 
@@ -286,7 +286,7 @@ elif st.session_state.predictions is None:
         door_animation()
         st.session_state.just_registered = False
 
-    st.title("Find Your Next Great Read : "+f"{df_catalog.index[-1]}, {item_sim.shape[0]}")
+    st.title("Find Your Next Great Read", text_alignment="center")
     
     # Clean the catalog and create dropdown options
     clean_catalog = df_catalog.dropna(subset=['Title', 'Author'])

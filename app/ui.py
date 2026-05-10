@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import time
 from typing import List
-from models import premium_model # Import the model to use inside the popup
+from app.models import premium_model # Import the model to use inside the popup
 
 def set_background(image_url):
     page_bg_img = f"""

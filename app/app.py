@@ -259,7 +259,7 @@ if not st.session_state.cookies_accepted:
 # --- STATE 1: Registration / Login ---
 if not st.session_state.logged_in:
     # set_background("https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")
-    set_background("https://github.com/Ildsjel-EPFL/library-recommender/blob/097962d09742c96bc44cc3f0457dcaf70e58a0f9/data/e33_cookies.png")
+    set_background("https://github.com/Ildsjel-EPFL/library-recommender/blob/main/data/e33_login.png?raw=true")
     
     st.title("Welcome to the Recommender")
     st.subheader("Please register to continue")
@@ -279,7 +279,7 @@ if not st.session_state.logged_in:
 
 # --- STATE 2: Selection & Prediction ---
 elif st.session_state.predictions is None:
-    set_background("https://github.com/Ildsjel-EPFL/library-recommender/blob/097962d09742c96bc44cc3f0457dcaf70e58a0f9/data/e33_doors.png")
+    set_background("https://github.com/Ildsjel-EPFL/library-recommender/blob/main/data/e33_doors.png?raw=true")
     
     # Trigger the CSS animation if they just logged in
     if st.session_state.just_registered:

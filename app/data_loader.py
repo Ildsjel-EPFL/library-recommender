@@ -13,12 +13,13 @@ def load_data():
     ITEM_SIM_ID = "1yPC8D1nLAcQ_Uzenx8iRXrKzDfLCpzJR" 
     DATA_MTX_ID = "1AZiKe2ArhSAKSDl3p5T17PnC5r8imgSz"
     HYBRID_ITEM_SIM_ID = "143JXstEzTcdokhwDNqEgIfjS7gvs0fF6"
-    items_csv_path = "data/enriched_items_merge_openlibrary_googlebooksAPI.csv"
+    ITMES_CSV_ID = "1xUwfA2SKZM-sN6x2wiKypN9KQyAZBd5C"
 
     os.makedirs("data", exist_ok=True)
     item_sim_path = "data/item_similarity.npy"
     data_mtx_path = "data/full_data_mtx.npy"
     hybrid_item_similarity_path = "data/hybrid_item_similarity.npy"
+    items_csv_path = "data/enriched_items_merge_openlibrary_googlebooksAPI.csv"
 
     if not os.path.exists(item_sim_path):
         gdown.download(id=ITEM_SIM_ID, output=item_sim_path, quiet=False)
@@ -26,6 +27,8 @@ def load_data():
         gdown.download(id=DATA_MTX_ID, output=data_mtx_path, quiet=False)
     if not os.path.exists(hybrid_item_similarity_path):
         gdown.download(id=HYBRID_ITEM_SIM_ID, output=hybrid_item_similarity_path, quiet=False)
+    if not os.path.exists(items_csv_path):
+        gdown.download(id=ITMES_CSV_ID, output=items_csv_path, quiet=False)
 
     item_sim = np.load(item_sim_path, mmap_mode="r")
     historic_users = np.load(data_mtx_path, mmap_mode="r")

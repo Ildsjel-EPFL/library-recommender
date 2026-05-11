@@ -8,7 +8,7 @@ archives/models/full_data_mtx.npy
 archives/models/item_similarity.npy
 archives/models/hybrid_item_similarity.npy
 archives/models/hybrid_item_similarity_e5.npy
-data\interactions_train.csv
-data\items.csv
-data\sample_submission.csv
-data\enriched_items_merge_openlibrary_googlebooksAPI.csv
+archives/data/interactions_train.csv
+archives/data/items.csv
+archives/data/sample_submission.csv
+archives/data/enriched_items_merge_openlibrary_googlebooksAPI.csv

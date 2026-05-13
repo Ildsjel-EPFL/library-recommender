@@ -159,7 +159,7 @@ For both model, we tried multiple Embeddings models, such as `paraphrase-multili
 ### Failure Analysis of the NCF Model
 Despite its complexity, the Neural Collaborative Filtering model failed to provide meaningful recommendations for several critical reasons:
 - **Extreme Sparsity:** The dataset is extremely sparse, with users having a median of only 6 interactions.
-- **Insufficient Data for Training:** A neural network requires thousands of examples to properly update the weights in its `nn.Embedding` layers. Because of this sparsity, the network was essentially guessing.
+- **Insufficient Data for Training:** A neural network requires millions of examples to properly update the weights in its `nn.Embedding` layers. Because of this sparsity, the network was essentially guessing.
 - **The Behavioral Link Gap:** While memory-based Collaborative Filtering can instantly link users who share even 2 books , a neural network struggles to establish that connection with only 6 data points.
 - **Feature Imbalance:** The model suffered from "Drowning in Text," where the size-64 user/item embeddings were overwhelmed by the size-768 Hugging Face text embeddings during concatenation. Consequently, the network stopped performing collaborative filtering and recommended books based purely on text similarity.
 - **Optimization Shortcuts:** Training with Binary Cross Entropy (BCE) loss allowed the network to learn a "lazy shortcut". Since users only read a tiny fraction of the 15,000 available books, the model achieved 99.9% accuracy simply by predicting 0 (not read) for everything.
@@ -192,21 +192,26 @@ The key differences between the hybrid models and traditional Collaborative Filt
 
 ### Summary Comparison Table
 
-| Feature | Traditional CF | Hybrid Matrix-Blend | Hybrid NCF |
+| Feature | Traditional CF | Hybrid NCF | Hybrid Matrix-Blend |
 | --- | --- | --- | --- |
-| **Logic** | Raw Overlaps (Memory-based) | Blended Similarities | Deep Learning (Model-based) |
-| **Inputs** | User-Item Interactions only | Interactions + Text Embeddings | IDs + Text + Numbers |
-| **Cold Start** | Poor | Good | Good |
-| **Relationship** | Linear (Dot-product) | Linear (Weighted average) | Non-linear (MLP layers) |
-| **Speed** | Moderate | Very Fast | Slower (requires GPU training) |
+| **Logic** | Raw Overlaps (Memory-based) | Deep Learning (Model-based) | Blended Similarities |
+| **Inputs** | User-Item Interactions only | IDs + Text + Numbers | Interactions + Text Embeddings |
+| **Cold Start** | Poor | Good | Good (w/ millions of interactions) |
+| **Relationship** | Linear (Dot-product) | Non-linear (MLP layers) | Linear (Weighted average) |
+| **Speed** | Moderate | Slower (requires GPU training) | Very Fast (once the embeddings obtained) |
 
 # Performance table
 
-|  | User-to-user | Item-to-item | NCF | Hybrid Matrix-Blending |
+|  | User-to-user | Item-to-item | Hybrid NCF | Hybrid Matrix-Blending |
 |---|---|---|---|---|
 | Precision@10 | 0.0565 | 0.0557 | 0.0021 | 0.0628 |
 | Recall@10 | 0.2904 | 0.2641 | 0.0106 | 0.3067 |
+| MAP@10 | 0.1451 | 0.1375 | 0.0049 | 0.1618 |
 
 # Discussion
+
+For this project, we tested multiple solutions, including basic cosine similarity all the way through highly complex neural networks associated with state-of-the-art embedders. We can clearly see that we a small amount of interactions and books read per users, the more complex models do not work as they have to train all their weights. It is interesting to see that they are not the go-to solution for every situation.
+
+While submitting in the Kaggle, we could see some behaviors which are compatible with a true . For example, if in the predictions we delete the books the users have already scores (by changing their score to -$ \infty$), the MAP@10 decreased considerably. 
 
 # Link to YouTube video

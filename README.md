@@ -215,3 +215,7 @@ For this project, we tested multiple solutions, including basic cosine similarit
 While submitting in the Kaggle, we could see some behaviors which are compatible with a true . For example, if in the predictions we delete the books the users have already scores (by changing their score to -$ \infty$), the MAP@10 decreased considerably. 
 
 # Link to YouTube video
+
+[YouTube Link](https://youtu.be/ZE_A9zrTs58)
+
+[Script of the video](https://docs.google.com/document/d/1KD-8Wtuz6AoS9n-IeasGWry15UZVNUvHE_oOWUw5YqA/edit?usp=sharing)

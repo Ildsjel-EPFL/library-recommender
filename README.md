@@ -1,3 +1,10 @@
+# 🚀 Quickstart
+
+**Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
 # Exploratory Data Analysis
 In the context of building these recommendation systems, the Exploratory Data Analysis (EDA) should focus on quantifying data sparsity, evaluating metadata quality, and visualizing interaction patterns to inform model selection.
 
@@ -6,7 +13,7 @@ In the context of building these recommendation systems, the Exploratory Data An
 ### Unique Counts
 We calculated the total number of unique users, unique items, and overall interactions statistics to establish the basic scale of the dataset.
 
-| # users | # total books | # unique books in interaction | avg books read per user| min # books read by a specific user | max # books read by a specific user | percentiles in the repartition of # books read by a specific user | std |
+| # users | # total books | # unique books in interaction | Avg books read per user| Min # books read by a specific user | Max # books read by a specific user | Percentiles in the repartition of # books read by a specific user | Standard deviation |
 |---|---|---|---|---|---|---|---|
 |7838|15291|15109|11.11|3|385|25% : 3, 50% : 6, 75% : 11|16.44|
 
